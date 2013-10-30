@@ -12,46 +12,13 @@
 
 (ns clj-amazon.product-advertising
   "This is a small Clojure binding for the Amazon Product Advertising API. You can find more information about the API here: http://docs.amazonwebservices.com/AWSECommerceService/latest/DG/index.html?Welcome.html"
-  (:use clj-amazon.core)
-  (:require [clojure.walk :as walk]))
+  (:use clj-amazon.core
+        clojure.data.zip.xml)
+  (:require [clojure.walk :as walk]
+            [clojure.zip :as zip]))
 
 (defn- parse-results [xml]
-  ;(prn xml)
-  (case (:tag xml)
-    ; Stuff to omit
-    :OperationRequest [nil nil]
-    :Request [nil nil]
-    ; Containers
-    :BrowseNodeLookupResponse (parse-results (second (:content xml)))
-    :ItemSearchResponse (parse-results (second (:content xml)))
-    :BrowseNodes (reduce #(apply assoc+ %1 (parse-results %2)) {} (:content xml))
-    :Items (reduce #(apply assoc+ %1 (parse-results %2)) {:items []} (:content xml))
-    ; Stuff to use
-    :Actor [:actor (first (:content xml))]
-    :Ancestors [:ancestors (reduce #(apply assoc+ %1 (parse-results %2)) {} (:content xml))]
-    :ASIN [:asin (first (:content xml))]
-    :Author [:author (first (:content xml))]
-    :BrowseNode (reduce #(apply assoc+ %1 (parse-results %2)) {} (:content xml))
-    :BrowseNodeId [:browser-node-id (read-string (first (:content xml)))]
-    :Children [:children (reduce #(apply assoc+ %1 (parse-results %2)) {} (:content xml))]
-    :DetailPageURL [:detail-page-url (first (:content xml))]
-    :Item [:items (reduce #(apply assoc+ %1 (parse-results %2)) {} (:content xml))]
-    :ItemAttributes [:item-atributes (reduce #(apply assoc+ %1 (parse-results %2)) {} (:content xml))]
-    :ItemLinks [:item-links (vec (map parse-results (:content xml)))]
-    :ItemLink {:description (-> xml :content first :content first), :url (-> xml :content second :content first)}
-    :Manufacturer [:manufacturer (first (:content xml))]
-    :Name [:name (first (:content xml))]
-    :ProductGroup [:product-group (first (:content xml))]
-    :NewReleases [:new-releases (map parse-results (:content xml))]
-    :NewRelease (reduce #(apply assoc+ %1 (parse-results %2)) {} (:content xml))
-    :Title [:title (first (:content xml))]
-    :TopItem (reduce #(apply assoc+ %1 (parse-results %2)) {} (:content xml))
-    :TopItemSet [:top-item-set (reduce #(apply assoc+ %1 (parse-results %2)) {} (:content xml))]
-    :TotalPages [:total-pages (read-string (first (:content xml)))]
-    :TotalResults [:total-results (read-string (first (:content xml)))]
-    :Type [:type (first (:content xml))]
-    [nil nil] ; In case some weird tag appears, ignore it for now.
-    ))
+  xml)
 
 ; Imagine that this macro is a VERY specialized do-template
 (defmacro ^:private make-fns [& specifics] 
