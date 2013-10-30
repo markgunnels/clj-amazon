@@ -1,4 +1,4 @@
-(defproject org.clojars.freeagent/clj-amazon "0.2.2-SNAPSHOT"
+(defproject org.clojars.freeagent/clj-amazon "0.2.3-SNAPSHOT"
   :description "Clojure bindings for the Amazon Product Advertising API."
   :url "http://github.com/FreeAgent/clj-amazon/"
   :license {:name "Eclipse Public License - v 1.0"
